@@ -1,8 +1,7 @@
 # Living Off the Foreign Land
 Scripts to setup and run the Living Off the Foreign Land (LOFL) attacker infrastructure. Refer to the following article at the BITSADMIN Blog for details on how to use the scripts in this repository.
 
-**Living Off the Foreign Land: Using Windows as Attack Platform**
-
+## Living Off the Foreign Land: Using Windows as Attack Platform
 <https://blog.bitsadmin.com/living-off-the-foreign-land-windows-as-offensive-platform>
 
 
