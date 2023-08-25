@@ -1,4 +1,10 @@
 <#
+Author: Arris Huijgen - @bitsadmin
+Website: https://github.com/bitsadmin/lofl
+License: BSD 3-Clause
+#>
+
+<#
 .SYNOPSIS
     This script connects to a TLS port and saves the server certificate(s) as .crt files to disk.
 

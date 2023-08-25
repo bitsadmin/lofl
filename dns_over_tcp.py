@@ -258,5 +258,5 @@ def getargs():
 
 
 if __name__ == '__main__':
-    print('DNSOverTCP v%.2f ( https://github.com/bitsadmin/dnsovertcp/ )\n' % VERSION)
+    print('DNSOverTCP v%.2f ( https://github.com/bitsadmin/lofl )\n' % VERSION)
     main(getargs())
