@@ -66,7 +66,7 @@ Write-Host	-ForegroundColor Red `
 @'
 
 Fully disables Windows Defender in two reboots
-by @bitsadmin - https://github.com/bitsadmin/winconfig/
+by @bitsadmin - https://github.com/bitsadmin/lofl
 
 '@
 

@@ -14,7 +14,7 @@ Scripts to setup and run the Living Off the Foreign Land (LOFL) attacker infrast
 | [`iptables_nat.sh`](#iptables_natsh)   | Helper script to add `iptables` NAT rules to interfaces                                                                                                      |
 | [`add_routes.sh`](#add_routessh)       | Helper script to add routes over a certain interface                                                                                                         |
 | [`CollectCerts.ps1`](#collectcertsps1) | Connects to a TLS port and saves the server certificate(s) as .crt files to disk                                                                             |
-
+| [`DisableWindowsDefender.ps1`](#disablewindowsdefenderps1) | Mostly automates the [Pre-Install procedures of Mandiant's Commando VM repository](https://github.com/mandiant/commando-vm#pre-install-procedures) to disable Windows Defender on the Offensive Windows VM |
 
 ## dns\_over\_tcp.py
 ### Description
@@ -161,4 +161,37 @@ SYNTAX
 
 DESCRIPTION
     The 'CollectCerts.ps1' script establishes a connection to the specified server using either the default port 636 (LDAPS) or alternatively a custom port can be specified.
+```
+
+
+## DisableWindowsDefender.ps1
+### Description
+Mostly automates the [Pre-Install procedures of Mandiant's Commando VM repository](https://github.com/mandiant/commando-vm#pre-install-procedures) to disable Windows Defender on the Offensive Windows VM.
+
+### Usage
+Simply right click the script and choose Run with PowerShell.
+
+```
+ -=[ Windows Defender Disable v1.0 ]=-
+
+
+Fully disables Windows Defender in two reboots
+by @bitsadmin - https://github.com/bitsadmin/lofl
+
+[+] Tamper Protection is disabled
+[+] Real-Time Protection is disabled
+[+] Disabled Microsoft Defender Antivirus
+[+] Disabled Cloud-Delivered Protection
+[+] Disabled Automatic Sample Submission
+[+] Systray Security Health icon is disabled
+[+] Killed Systray Security Health icon
+[+] Disabled task "Windows Defender Verification"
+[+] Disabled task "Windows Defender Cleanup"
+[+] Disabled task "Windows Defender Scheduled Scan"
+[+] Disabled task "Windows Defender Cache Maintenance"
+[+] Disabled Windows Defender scheduled tasks
+[+] Cleanup
+    [+] Re-enabling UAC
+    [+] Unregistering script from automatic startup
+[+] Finished!
 ```
