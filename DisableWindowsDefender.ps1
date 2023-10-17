@@ -207,6 +207,14 @@ else
 foreach($policy in $policies)
 {
 	$path = Get-ItemProperty -Path $policy.Path -ea 0
+	
+	# Create key if it does not exist
+	if(-not $?)
+	{
+		New-Item $policy.Path | Out-Null
+	}
+	
+	# Obtain current value
 	$value = $null
 	if($path)
 	{
