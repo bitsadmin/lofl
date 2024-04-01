@@ -2,8 +2,9 @@
 Scripts to setup and run the Living Off the Foreign Land (LOFL) attacker infrastructure. Refer to the following article at the BITSADMIN Blog for details on how to use the scripts in this repository.
 
 ## Living Off the Foreign Land: Using Windows as Attack Platform
-<https://blog.bitsadmin.com/living-off-the-foreign-land-windows-as-offensive-platform>
-
+* Part 1: Setup Linux VM for SOCKS routing - <https://blog.bitsadmin.com/living-off-the-foreign-land-windows-as-offensive-platform>
+* Part 2: Configuring the Offensive Windows VM - <https://blog.bitsadmin.com/living-off-the-foreign-land-windows-as-offensive-platform-part-2>
+* Part 3: Using Windows as Offensive Platform - <https://blog.bitsadmin.com/living-off-the-foreign-land-windows-as-offensive-platform-part-3>
 
 ## Scripts
 | Name                                   | Description                                                                                                                                                  |
