@@ -29,6 +29,9 @@ cd lofl
 
 
 ### Network ###
+# Enable IP forwarding
+sysctl -w net.ipv4.ip_forward=1
+
 # Create tunnel interface
 ./create_tun.sh tun1
 
