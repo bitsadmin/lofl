@@ -108,7 +108,7 @@ fi
 echo -e "\nStarting socat to proxy traffic to $dc_ip"
 while true
 do
-	socat -v -s UDP-LISTEN:$port,fork,reuseaddr TCP:$dc_ip:389 2>&1 | while read line; do
+	socat -v -s UDP-LISTEN4:$port,fork,reuseaddr TCP:$dc_ip:389 2>&1 | while read line; do
 	  if [[ "$line" =~ [\<\>]\ ([0-9 :./]+)\ length=[0-9]+\ from=[0-9]+\ to=[0-9]+ ]]; then
 		echo "${BASH_REMATCH[0]}"
 	  fi
