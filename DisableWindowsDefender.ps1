@@ -3,8 +3,11 @@ Author: Arris Huijgen - @bitsadmin
 Website: https://github.com/bitsadmin/lofl
 License: BSD 3-Clause
 
-Automates steps described at Mandiant's Commando VM GitHub repository
-https://github.com/mandiant/commando-vm#pre-install-procedures
+Partially automates steps described at:
+- Mandiant's Commando VM GitHub repository
+  https://github.com/mandiant/commando-vm#pre-install-procedures
+- Ruud Mens' (@LazyAdmin) blog
+  https://lazyadmin.nl/win-11/turn-off-windows-defender-windows-11-permanently/
 #>
 
 # Relaunch current script elevated if currently not running elevated
@@ -60,12 +63,12 @@ Write-Host	-ForegroundColor Red `
 			-BackgroundColor White `
 			-Object @'
                                        
- -=[ Windows Defender Disable v1.0 ]=- 
+ -=[ Windows Defender Disable v1.1 ]=- 
                                        
 '@
 @'
 
-Fully disables Windows Defender in two reboots
+Fully disables Windows Defender in three reboots
 by @bitsadmin - https://github.com/bitsadmin/lofl
 
 '@
@@ -128,25 +131,30 @@ Windows Defender is currently disabled. Press Enter to re-enable it.
 	# Re-enabling Windows Defender scheduled tasks
 	Get-ScheduledTask -TaskPath '\Microsoft\Windows\Windows Defender\' | Enable-ScheduledTask | % { "[+] Re-enabled task `"$($_.TaskName)`"" }
 	'[+] Re-enabled Windows Defender scheduled tasks'
+	
+	# Re-enable services/drivers
+	$services = [ordered]@{Sense = 3; WdBoot = 0; WdFilter = 0; WdNisDrv = 3; WdNisSvc = 3; WinDefend = 2}
+	$services.Keys | Foreach-Object {
+		$targetvalue = $services[$_]
+		Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\$_ -Name Start -Value $targetvalue -ea 0
 
-	Write-Host  -ForegroundColor DarkBlue `
-				-BackgroundColor Green `
-				-Object @'
-
-Optionally the Tamper Protection can also be enabled again.
-
-After pressing Enter the Windows Defender settings UI will be opened. If you want to enable Tamper Protection again, navigate to:
-1. Virus & threat protection
-2. Virus & threat protection settings
-3. Enable: Tamper Protection
-
-If you don't want to re-enable Tamper Protection, just close the settings window.
-
-'@
-	Read-Host -Prompt 'Press Enter to continue...'
-	Start-Process 'windowsdefender:'
-
-	"[+] Finished!`r`n"
+		# Workaround for error caused by above Set-ItemProperty: 'Attempted to perform an unauthorized operation.'
+		# Value is properly set though, so hiding the error and validating the Start value with the code below
+		$currentvalue = Get-ItemPropertyValue -Path HKLM:\SYSTEM\CurrentControlSet\Services\$_ -Name Start
+		if($currentvalue -EQ $targetvalue)
+		{
+			"[+] Re-enabled service/driver `"$_`""
+		}
+		else
+		{
+			"[-] Failed renabling service/driver `"$_`""
+		}
+	}
+	'[+] Re-enabled Windows Defender services/drivers'
+	
+	# Finish
+	'[+] Finished! Reboot the machine to have Windows Defender fully functional again.'
+	'    Optionally, Tamper Protection can also be enabled again.'
 	Read-Host -Prompt 'Press Enter to continue...'
 	Exit
 }
@@ -172,7 +180,7 @@ After pressing Enter the Windows Defender settings UI will be opened. Perform th
 The computer will automatically reboot twice as soon as Tamper Protection has been turned off.
 
 '@
-				#-Object @"After pressing enter the Windows Defender settings UI will be opened.`r`nNavigate to:`r`n1. Virus & threat protection`r`n2. Virus & threat protection settings`r`n3. Disable: Tamper Protection.`r`nThe computer will automatically reboot twice once tamper protection has been switched off."
+
 	Read-Host -Prompt 'Press Enter to continue...'
 	Start-Process 'windowsdefender:'
 	
@@ -278,6 +286,17 @@ Set-UAC -Enabled:$true
 '    [+] Unregistering script from automatic startup'
 Set-AutostartScript -Register:$false
 
-# Finished
-"[+] Finished!`r`n"
+# Final step
+'[+] The final step is to boot into Safe Mode and disable the services/drivers related to Windows Defender'
+	Write-Host  -ForegroundColor DarkBlue `
+				-BackgroundColor Green `
+				-Object @'
+1. Reboot the machine in Safe Mode: Start -> Power -> Shift+Click on Reboot
+   -> Troubleshoot -> Advanced options -> Startup Settings -> Restart
+   -> Choose: '4) Enable Safe Mode'
+2. Once booted in Safe Mode, launch PowerShell and execute the following oneliner:
+   'Sense','WdBoot','WdFilter','WdNisDrv','WdNisSvc','WinDefend' | % { Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\$_ -Name Start -Value 4 -Verbose }
+3. Reboot to Normal Mode and Windows Defender will be disabled!
+
+'@
 Read-Host -Prompt 'Press Enter to continue...'
