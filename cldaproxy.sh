@@ -113,6 +113,7 @@ do
 		echo "${BASH_REMATCH[0]}"
 	  fi
 	done
+	sleep 0.1
 done
 
 # Remove PREROUTING rules
