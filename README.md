@@ -173,7 +173,7 @@ Mostly automates the [Pre-Install procedures of Mandiant's Commando VM repositor
 Simply right click the script and choose Run with PowerShell.
 
 ```
- -=[ Windows Defender Disable v1.0 ]=-
+ -=[ Windows Defender Disable v1.1 ]=-
 
 
 Fully disables Windows Defender in two reboots
@@ -194,5 +194,11 @@ by @bitsadmin - https://github.com/bitsadmin/lofl
 [+] Cleanup
     [+] Re-enabling UAC
     [+] Unregistering script from automatic startup
-[+] Finished!
+[+] The final step is to boot into Safe Mode and disable the services/drivers related to Windows Defender
+1. Reboot the machine in Safe Mode: Start -> Power -> Shift+Click on Reboot
+   -> Troubleshoot -> Advanced options -> Startup Settings -> Restart
+   -> Choose: '4) Enable Safe Mode'
+2. Once booted in Safe Mode, launch PowerShell and execute the following oneliner:
+   'Sense','WdBoot','WdFilter','WdNisDrv','WdNisSvc','WinDefend' | % { Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\$_ -Name Start -Value 4 -Verbose }
+3. Reboot to Normal Mode and Windows Defender will be disabled!
 ```
