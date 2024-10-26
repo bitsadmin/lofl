@@ -90,7 +90,6 @@ $policies = @(
 	[PSCustomObject]@{Title='Systray Security Health icon'; Path='HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run'; Property='SecurityHealth'; DesiredValue=$null; OriginalValue='%windir%\system32\SecurityHealthSystray.exe' }
 )
 
-
 # Re-enable Windows Defender in case it is currently disabled
 $defenderpolicy = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender' -ea 0
 $disabled = $defenderpolicy.DisableAntiSpyware
@@ -129,7 +128,7 @@ Windows Defender is currently disabled. Press Enter to re-enable it.
 	}
 
 	# Re-enabling Windows Defender scheduled tasks
-	Get-ScheduledTask -TaskPath '\Microsoft\Windows\Windows Defender\' | Enable-ScheduledTask | % { "[+] Re-enabled task `"$($_.TaskName)`"" }
+	Get-ScheduledTask -TaskPath '\Microsoft\Windows\Windows Defender\' | Enable-ScheduledTask | ForEach-Object { "[+] Re-enabled task `"$($_.TaskName)`"" }
 	'[+] Re-enabled Windows Defender scheduled tasks'
 	
 	# Re-enable services/drivers
@@ -216,10 +215,19 @@ foreach($policy in $policies)
 {
 	$path = Get-ItemProperty -Path $policy.Path -ea 0
 	
-	# Create key if it does not exist
+	# Construct registry path if it does not exist
 	if(-not $?)
 	{
-		New-Item $policy.Path | Out-Null
+		$pathParts = $policy.Path -split '\\'
+		$currentPath = ""
+		foreach ($part in $pathParts)
+		{
+			$currentPath += $part + '\'
+			if (-not (Test-Path $currentPath))
+			{
+				New-Item -Path $currentPath -Force | Out-Null
+			}
+		}
 	}
 	
 	# Obtain current value
@@ -276,7 +284,7 @@ Stop-Process -Name SecurityHealthSystray -Force -ea 0
 
 # Disabling Windows Defender scheduled tasks
 Get-ScheduledTask -TaskPath '\Microsoft\Windows\Windows Defender\' | Stop-ScheduledTask
-Get-ScheduledTask -TaskPath '\Microsoft\Windows\Windows Defender\' | Disable-ScheduledTask | % { "[+] Disabled task `"$($_.TaskName)`"" }
+Get-ScheduledTask -TaskPath '\Microsoft\Windows\Windows Defender\' | Disable-ScheduledTask | ForEach-Object { "[+] Disabled task `"$($_.TaskName)`"" }
 '[+] Disabled Windows Defender scheduled tasks'
 
 # Cleanup
