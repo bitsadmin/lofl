@@ -176,7 +176,7 @@ Simply right click the script and choose Run with PowerShell.
  -=[ Windows Defender Disable v1.1 ]=-
 
 
-Fully disables Windows Defender in two reboots
+Fully disables Windows Defender in three reboots
 by @bitsadmin - https://github.com/bitsadmin/lofl
 
 [+] Tamper Protection is disabled
