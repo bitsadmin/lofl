@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "CLDAProxy v1.0
+echo "CLDAProxy v1.1
 @bitsadmin - https://github.com/bitsadmin/lofl"
 
 bn=$(basename $0)
@@ -52,7 +52,7 @@ then
 fi
 
 # Collect LDAP servers
-echo -e "\nPerforming lookup of domain $domain..."
+echo -e "\nPerforming lookup of LDAP servers for domain $domain..."
 output=$(dig +short -t SRV _ldap._tcp.dc._msdcs.$domain)
 
 if [ -z "$output" ]; then
@@ -63,57 +63,63 @@ fi
 # Iterate over returned LDAP servers
 ips=()
 while IFS= read -r line; do
-  # Extract hostname
-  hostname=$(echo "$line" | awk '{print $NF}')
-
-  # Resolve hostnames
-  ip=$(dig +short $hostname)
-  if [[ ! " ${ips[@]} " =~ " ${ip} " ]]; then
-    ips+=("$ip")
-  fi
+    # Extract hostname (assuming last column in the response is the hostname)
+    hostname=$(echo "$line" | awk '{print $NF}')
+    
+    # Resolve hostnames to IP addresses
+    ip_list=$(dig +short "$hostname")
+    
+    # Loop through each IP returned by dig
+    for ip in $ip_list; do
+        if [[ ! " ${ips[@]} " =~ " ${ip} " ]]; then
+            ips+=("$ip")
+        fi
+    done
 done <<< "$output"
 
 # Summarize LDAP server IPs
 if [[ ${#ips[@]} -eq 0 ]]; then
-  echo "No IP addresses found for domain $domain"
-  exit 1
+    echo "No IP addresses found for domain $domain"
+    exit 1
 else
-  echo "Found IPs:"
-  for ip in "${ips[@]}"
-  do
-    echo "- $ip"
-  done
+    echo "Found IPs:"
+    for ip in "${ips[@]}"
+    do
+        echo "- $ip"
+    done
 fi
 
 # Check available port
 port=11389
 while ss -lnu "sport = :$port" | grep ":$port" > /dev/null; do
-  ((port+=1000))
+    ((port+=1000))
 done
 echo -e "\nUsing port $port/UDP"
 
 # Execute PREROUTING command for each IP address
-echo -e "\nCreating PREROUTING rules:"
+echo -e "\nCreating PREROUTING rules"
 for ip in "${ips[@]}"; do
-  echo "- $ip"
-  iptables -t nat -A PREROUTING -d "$ip" -p udp --dport 389 -j REDIRECT --to-port $port
+    command="iptables -t nat -A PREROUTING -d "$ip" -p udp --dport 389 -j REDIRECT --to-port $port"
+    echo "$command"
+    eval "$command"
 done
 
 # Determine DC IP
 if [[ -z "$dc_ip" ]]; then
-  dc_ip="${ips[0]}"
+    dc_ip="${ips[0]}"
 fi
 
 # Start socat for CLDAP to LDAP conversion
 echo -e "\nStarting socat to proxy traffic to $dc_ip"
 while true
 do
-	socat -v -s UDP-LISTEN4:$port,fork,reuseaddr TCP:$dc_ip:389 2>&1 | while read line; do
-	  if [[ "$line" =~ [\<\>]\ ([0-9 :./]+)\ length=[0-9]+\ from=[0-9]+\ to=[0-9]+ ]]; then
-		echo "${BASH_REMATCH[0]}"
-	  fi
-	done
-	sleep 0.1
+    command="socat -v -s UDP4-LISTEN:$port,fork,reuseaddr TCP:$dc_ip:389"
+    echo "$command"
+    eval "$command" 2>&1 | while read line; do
+        if [[ "$line" =~ [\<\>]\ ([0-9 :./]+)\ length=[0-9]+\ from=[0-9]+\ to=[0-9]+ ]]; then
+            echo "${BASH_REMATCH[0]}"
+        fi
+    done
 done
 
 # Remove PREROUTING rules
