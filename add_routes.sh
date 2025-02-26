@@ -16,8 +16,8 @@ Examples:
   $bn subnets.txt tun1
 
 Example subnet.txt contents
-10.0.10.0/24
-10.0.20.0/24
+10.0.10.0/24    # Domain X
+10.0.20.0/24    # Domain Y
 10.0.30.0/24
 192.168.0.0/16
 "
