@@ -8,6 +8,8 @@ Partially automates steps described at:
   https://github.com/mandiant/commando-vm#pre-install-procedures
 - Ruud Mens' (@LazyAdmin) blog
   https://lazyadmin.nl/win-11/turn-off-windows-defender-windows-11-permanently/
+- Disable Smart App Control
+  Source: https://www.reddit.com/r/Windows11/comments/15ed10t/windows_installer_is_very_slow_after_disabling/
 #>
 
 # Relaunch current script elevated if currently not running elevated
@@ -294,7 +296,7 @@ Set-UAC -Enabled:$true
 '    [+] Unregistering script from automatic startup'
 Set-AutostartScript -Register:$false
 
-# Final step
+# Final steps
 '[+] The final step is to boot into Safe Mode and disable the services/drivers related to Windows Defender'
 	Write-Host  -ForegroundColor DarkBlue `
 				-BackgroundColor Green `
@@ -305,6 +307,9 @@ Set-AutostartScript -Register:$false
 2. Once booted in Safe Mode, launch PowerShell and execute the following oneliner:
    'Sense','WdBoot','WdFilter','WdNisDrv','WdNisSvc','WinDefend' | % { Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\$_ -Name Start -Value 4 -Verbose }
 3. Reboot to Normal Mode and Windows Defender will be disabled!
+4. Because disabling Windows Defender sometimes causes slow downs with software installations, make sure to also disable Smart App Control through either:
+   - windowsdefender://SmartApp/
+   - Searching the Settings for 'Smart App Control'
 
 '@
 Read-Host -Prompt 'Press Enter to continue...'
