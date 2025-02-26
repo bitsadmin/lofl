@@ -124,7 +124,7 @@ Helper script to add routes over a certain interface
 
 ### Usage
 ```
-Add Routes v1.0
+Add Routes v1.1
 @bitsadmin - https://github.com/bitsadmin/lofl
 
 Usage: add_routes.sh <subnet_file> <interface> [gateway_ip]
@@ -139,8 +139,8 @@ Examples:
   add_routes.sh subnets.txt tun1
 
 Example subnet.txt contents
-10.0.10.0/24
-10.0.20.0/24
+10.0.10.0/24    # Domain X
+10.0.20.0/24    # Domain Y
 10.0.30.0/24
 192.168.0.0/16
 ```
@@ -201,4 +201,7 @@ by @bitsadmin - https://github.com/bitsadmin/lofl
 2. Once booted in Safe Mode, launch PowerShell and execute the following oneliner:
    'Sense','WdBoot','WdFilter','WdNisDrv','WdNisSvc','WinDefend' | % { Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\$_ -Name Start -Value 4 -Verbose }
 3. Reboot to Normal Mode and Windows Defender will be disabled!
+4. Because disabling Windows Defender sometimes causes slow downs with software installations, make sure to also disable Smart App Control through either:
+   - windowsdefender://SmartApp/
+   - Searching the Settings for 'Smart App Control'
 ```
